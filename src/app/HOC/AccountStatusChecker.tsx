@@ -3,7 +3,7 @@ import mixpanel from 'mixpanel-figma';
 import {
   CreateAccountBody,
   useCreateAccountMutation,
-  useLazyCheckAccountQuery,
+  useUpdateAccountMutation,
 } from '@/app/redux/services';
 import { AnimatedPage, ErrorComponent, Splash } from '@/app/components';
 import { EventType } from '@/eventType';
@@ -17,7 +17,7 @@ type Props = {
 };
 export const AccountStatusChecker = ({ children }: Props) => {
   const [isShowError, setIsShowError] = useState(false);
-  const [onCheckAccount, { isLoading }] = useLazyCheckAccountQuery();
+  const [onUpdateAccount, { isLoading }] = useUpdateAccountMutation();
 
   const [createAccount, { isLoading: isCreatingAccount }] =
     useCreateAccountMutation();
@@ -45,7 +45,7 @@ export const AccountStatusChecker = ({ children }: Props) => {
       const { id } = message?.payload?.data;
       mixpanel.identify(id);
 
-      onCheckAccount(id)
+      onUpdateAccount({ id, photoUrl: message?.payload?.data?.photoUrl })
         .unwrap()
         .then((data) => {
           const accountData = Object.keys(data);

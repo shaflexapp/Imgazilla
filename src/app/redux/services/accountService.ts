@@ -1,5 +1,4 @@
 import { createBaseApi } from '@/app/redux/api';
-import { AccountState } from '@/app/redux/features';
 
 export const ACCOUNT_SERVICE_REDUCER_KEY = 'accountService';
 
@@ -14,8 +13,12 @@ export interface CreateAccountBody {
 
 export const accountService = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    checkAccount: builder.query<AccountState, string>({
-      query: (id: string) => `/account/getAccount?id=${id}`,
+    updateAccount: builder.mutation({
+      query: ({ id, photoUrl }) => ({
+        url: '/account/updateAccount',
+        method: 'PATCH',
+        body: { id, photoUrl },
+      }),
     }),
 
     createAccount: builder.mutation({
@@ -41,7 +44,7 @@ export const accountService = baseApi.injectEndpoints({
 });
 
 export const {
-  useLazyCheckAccountQuery,
+  useUpdateAccountMutation,
   useCreateAccountMutation,
   useLazyGetAccountCreditsQuery,
   useTakeBonusMutation,
