@@ -23,6 +23,18 @@ export const PriceSelector = () => {
     );
   }
 
+  // Also covers an API that doesn't serve the price list yet
+  if (princeList.length === 0) {
+    return (
+      <AnimatedPage>
+        <p role='status' className='text-primary-gray text-center text-sm'>
+          Prices are temporarily unavailable. Please reload the plugin or try
+          again later.
+        </p>
+      </AnimatedPage>
+    );
+  }
+
   return (
     <AnimatedPage>
       <div className='flex flex-col w-full'>

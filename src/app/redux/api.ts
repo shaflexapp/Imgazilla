@@ -8,8 +8,7 @@ export const createBaseApi = (reducerPath: string) =>
     baseQuery: fetchBaseQuery({
       baseUrl: process.env.BASE_API_URL,
       prepareHeaders: (headers, { endpoint, getState }): void | Headers => {
-        const figmaId =
-          (getState() as RootState)?.account?.figmaUserID || endpoint;
+        const figmaId = (getState() as RootState)?.account?.figmaUserID;
         return prepareHeaders(headers, endpoint, figmaId);
       },
     }),

@@ -37,7 +37,7 @@ export const FormatSelector = ({
   onChange,
   forceClose,
 }: Props) => {
-  const [selectedFormat, setSelectedFormat] = useState<Option>(
+  const [selectedFormat, setSelectedFormat] = useState<Option | undefined>(
     formatOptions.find((option) => option.label === defaultFormat),
   );
   const [isOpen, setIsOpen] = useState(false);
@@ -58,6 +58,21 @@ export const FormatSelector = ({
       return;
     }
   }, [forceClose]);
+
+  // Export settings such as PDF can't be converted to another format,
+  // so they are shown read-only and exported as is.
+  if (!selectedFormat) {
+    return (
+      <div
+        className='flex flex-row justify-center items-center min-w-32 rounded-lg border border-primary-primaryDark bg-primary-mainDark px-3 py-2 text-sm'
+        title='This format is exported as is'
+      >
+        <FormatBadge format={defaultFormat}>
+          {defaultFormat || 'Unknown'}
+        </FormatBadge>
+      </div>
+    );
+  }
 
   return (
     <div className='relative inline-block text-left min-w-32'>

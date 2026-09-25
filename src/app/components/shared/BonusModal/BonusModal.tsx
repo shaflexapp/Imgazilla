@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import confetti from 'canvas-confetti';
 
 import {
@@ -13,8 +14,14 @@ import {
   useLazyGetAccountCreditsQuery,
   useTakeBonusMutation,
 } from '@/app/redux/services';
-import { updateAccountCredits } from '@/app/redux/features';
+import {
+  getAccount,
+  getAccountHasBonus,
+  setAccountHasBonus,
+  updateAccountCredits,
+} from '@/app/redux/features';
 import { useTypedDispatch } from '@/app/redux/store';
+import { isFetchBaseQueryError } from '@/app/redux/helpers';
 
 import { UIEventType } from '@/eventType';
 
@@ -39,6 +46,13 @@ export const BonusModal = () => {
   const [takeBonus, { isLoading, isSuccess }] = useTakeBonusMutation();
   const [getAccountCredits] = useLazyGetAccountCreditsQuery();
 
+  const { figmaUserID } = useSelector(getAccount);
+  // null until the API reports it (older API versions don't return it).
+  const hasBonus = useSelector(getAccountHasBonus);
+  const isAccountLoaded = Boolean(figmaUserID);
+  // Keep the modal open for the success animation after claiming in this session.
+  const isBonusClaimed = Boolean(hasBonus) && !isSuccess;
+
   const onTrackClick = useMixpanel();
 
   const dispatch = useTypedDispatch();
@@ -59,8 +73,7 @@ export const BonusModal = () => {
 
   const { onSendMessage } = useWindowMessaging(handleFigmaPluginMessages);
 
-  const handleOnClose = useCallback((state: boolean) => {
-    setIsOpen(state);
+  const persistBonusModalSeen = useCallback(() => {
     onSendMessage({
       type: UIEventType.SET_CLIENT_STORAGE_DATA,
       payload: {
@@ -68,6 +81,11 @@ export const BonusModal = () => {
         value: true,
       },
     });
+  }, []);
+
+  const handleOnClose = useCallback((state: boolean) => {
+    setIsOpen(state);
+    persistBonusModalSeen();
 
     onTrackClick('click', {
       name: ANALYTIC_EVENTS.CLICK_ON_MAYBE_LATE_BUTTON,
@@ -115,25 +133,38 @@ export const BonusModal = () => {
     });
   }, []);
 
-  const handleTakeBonus = useCallback(() => {
-    takeBonus({})
-      .unwrap()
-      .then(() => {
-        getAccountCredits('')
-          .unwrap()
-          .then((credits: string) => {
-            dispatch(updateAccountCredits({ credits }));
-            handleToggleConfetti();
-
-            setTimeout(() => {
-              handleOnClose(false);
-            }, 1000);
-          });
-      });
-
+  const handleTakeBonus = useCallback(async () => {
     onTrackClick('click', {
       name: ANALYTIC_EVENTS.CLICK_ON_TAKE_BONUS_BUTTON,
     });
+
+    try {
+      await takeBonus({}).unwrap();
+    } catch (error) {
+      // 403: the bonus was already claimed, so there is nothing to offer anymore.
+      if (isFetchBaseQueryError(error) && error.status === 403) {
+        setIsOpen(false);
+        persistBonusModalSeen();
+        dispatch(setAccountHasBonus(true));
+      }
+      // Other errors are shown by the error handling middleware.
+      return;
+    }
+
+    dispatch(setAccountHasBonus(true));
+
+    try {
+      const credits: string = await getAccountCredits('').unwrap();
+      dispatch(updateAccountCredits({ credits }));
+    } catch {
+      // The bonus is already applied, credits are refreshed on the next request.
+    }
+
+    handleToggleConfetti();
+
+    setTimeout(() => {
+      handleOnClose(false);
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -144,6 +175,10 @@ export const BonusModal = () => {
       },
     });
   }, []);
+
+  if (!isAccountLoaded || isBonusClaimed) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOnClose}>

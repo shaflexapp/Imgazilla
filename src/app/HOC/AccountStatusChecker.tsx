@@ -1,4 +1,5 @@
-import React, { ReactNode, useCallback, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import mixpanel from 'mixpanel-figma';
 import {
   CreateAccountBody,
@@ -8,15 +9,20 @@ import {
 import { AnimatedPage, ErrorComponent, Splash } from '@/app/components';
 import { EventType } from '@/eventType';
 import { useWindowMessaging } from '@/app/hooks/useFigmaMessaging';
-import { setAccount } from '@/app/redux/features';
-import { isFetchBaseQueryError, isErrorWithMessage } from '@/app/redux/helpers';
+import { AccountState, getAccount, setAccount } from '@/app/redux/features';
 import { useTypedDispatch } from '@/app/redux/store';
+
+// The sandbox sends the user data right after startup; without it the plugin
+// can't identify the user, so show the error screen instead of an endless splash
+const USER_ACCOUNT_DATA_TIMEOUT = 20000;
 
 type Props = {
   children: ReactNode;
 };
 export const AccountStatusChecker = ({ children }: Props) => {
   const [isShowError, setIsShowError] = useState(false);
+  const [isUserDataReceived, setIsUserDataReceived] = useState(false);
+  const { figmaUserID } = useSelector(getAccount);
   const [onUpdateAccount, { isLoading }] = useUpdateAccountMutation();
 
   const [createAccount, { isLoading: isCreatingAccount }] =
@@ -24,48 +30,82 @@ export const AccountStatusChecker = ({ children }: Props) => {
 
   const dispatch = useTypedDispatch();
 
+  // The app waits for figmaUserID, so an account without it ends in the error UI
+  const handleAccountLoaded = useCallback(
+    (data: AccountState) => {
+      if (!data?.figmaUserID) {
+        setIsShowError(true);
+        return;
+      }
+
+      dispatch(setAccount(data));
+    },
+    [dispatch],
+  );
+
   const handleCreateAccount = useCallback(
     (userData: CreateAccountBody) => {
       createAccount(userData)
         .unwrap()
-        .then((data) => {
-          dispatch(setAccount(data));
-        })
-        .catch((error) => {
-          if (isErrorWithMessage(error)) {
-            setIsShowError(true);
-          }
+        .then(handleAccountLoaded)
+        .catch(() => {
+          // Any failure (HTTP, network, timeout, non-JSON body) ends in the error UI
+          setIsShowError(true);
         });
     },
-    [createAccount, setAccount],
+    [createAccount, handleAccountLoaded],
   );
 
-  const handleFigmaPluginMessages = useCallback((message: MessageType) => {
-    if (message?.type === EventType.USER_ACCOUNT_DATA) {
-      const { id } = message?.payload?.data;
-      mixpanel.identify(id);
+  const handleFigmaPluginMessages = useCallback(
+    (message: MessageType) => {
+      if (message?.type === EventType.USER_ACCOUNT_DATA) {
+        const userData = message?.payload?.data;
+        setIsUserDataReceived(true);
 
-      onUpdateAccount({ id, photoUrl: message?.payload?.data?.photoUrl })
-        .unwrap()
-        .then((data) => {
-          const accountData = Object.keys(data);
+        if (!userData?.id) {
+          setIsShowError(true);
+          return;
+        }
 
-          if (accountData.length > 0) {
-            dispatch(setAccount(data));
-            return;
-          }
+        const { id } = userData;
+        // Figma users without an avatar have a null photoUrl; the API expects a string
+        const photoUrl: string = userData.photoUrl ?? '';
 
-          handleCreateAccount(message?.payload?.data);
-        })
-        .catch((error) => {
-          if (isFetchBaseQueryError(error)) {
+        mixpanel.identify(id);
+
+        onUpdateAccount({ id, photoUrl })
+          .unwrap()
+          .then((data) => {
+            const accountData = Object.keys(data ?? {});
+
+            if (accountData.length > 0) {
+              handleAccountLoaded(data);
+              return;
+            }
+
+            handleCreateAccount({ id, name: userData.name ?? '', photoUrl });
+          })
+          .catch(() => {
             setIsShowError(true);
-          }
-        });
-    }
-  }, []);
+          });
+      }
+    },
+    [onUpdateAccount, handleCreateAccount, handleAccountLoaded],
+  );
 
   useWindowMessaging(handleFigmaPluginMessages);
+
+  useEffect(() => {
+    if (isUserDataReceived) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setIsShowError(true);
+    }, USER_ACCOUNT_DATA_TIMEOUT);
+
+    return () => clearTimeout(timeoutId);
+  }, [isUserDataReceived]);
 
   if (isShowError) {
     return (
@@ -75,7 +115,9 @@ export const AccountStatusChecker = ({ children }: Props) => {
     );
   }
 
-  if (isCreatingAccount || isLoading) {
+  // Requests without an identity must never be sent, so the app is only usable
+  // once the account is loaded
+  if (isCreatingAccount || isLoading || !figmaUserID) {
     return (
       <AnimatedPage>
         <Splash />

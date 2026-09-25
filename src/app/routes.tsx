@@ -1,5 +1,9 @@
 import React from 'react';
-import { createMemoryRouter, RouteObject } from 'react-router-dom';
+import {
+  createMemoryRouter,
+  RouteObject,
+  useRouteError,
+} from 'react-router-dom';
 
 import { TabsLayout } from '@/app/layouts/TabsLayout';
 import {
@@ -29,10 +33,17 @@ const ConditionalComponent = () => {
   );
 };
 
+// The router catches render errors itself; rethrow them so the top-level
+// error boundary in App.tsx shows the error screen and reports them to Sentry
+const RouteErrorBoundary = () => {
+  throw useRouteError();
+};
+
 const routes: RouteObject[] = [
   {
     path: '/',
     element: <TabsLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       {
         path: APP_ROUTES_PATHS[FAVICON_EXPORT],

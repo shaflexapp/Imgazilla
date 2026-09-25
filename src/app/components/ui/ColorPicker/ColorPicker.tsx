@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useMemo } from 'react';
 import { Plus } from 'lucide-react';
 import { debounce } from 'lodash';
 
@@ -21,8 +21,15 @@ export const ColorPicker = ({
   onSelectHistoryColor,
 }: Props) => {
   const [value, setValue] = useState('');
-  const [isDisabled, setIsDisabled] = useState(true);
   const [isError, setIsError] = useState(false);
+
+  // Derived synchronously so the + button can never submit an invalid value,
+  // even while the debounced error highlighting is still pending.
+  const validatedValue = useMemo(
+    () => validateAndFormatHexColor(value),
+    [value],
+  );
+  const isDisabled = !validatedValue;
 
   const popover = useRef();
 
@@ -33,14 +40,7 @@ export const ColorPicker = ({
   const handleOnClose = useCallback(() => toggle(false), []);
 
   const handleColorChange = useCallback((value: string) => {
-    const validatedColor = validateAndFormatHexColor(value);
-    if (!validatedColor) {
-      setIsError(true);
-      return;
-    }
-
-    setIsError(false);
-    setIsDisabled(false);
+    setIsError(value !== '' && !validateAndFormatHexColor(value));
   }, []);
 
   const debouncedHandleColorChange = useCallback(
@@ -55,11 +55,13 @@ export const ColorPicker = ({
   }, []);
 
   const handleOnSubmit = useCallback(() => {
-    const validatedValue = validateAndFormatHexColor(value);
+    if (!validatedValue) {
+      return;
+    }
 
     onChange(validatedValue);
     handleOnClose();
-  }, [value]);
+  }, [validatedValue, onChange]);
 
   const handleOnSelectHistoryColor = useCallback((color: string) => {
     setValue('');
@@ -98,8 +100,7 @@ export const ColorPicker = ({
             {history
               ? history.map((item) => {
                   const isEqual =
-                    item?.toLowerCase() ===
-                      validateAndFormatHexColor(value)?.toLowerCase() ||
+                    item?.toLowerCase() === validatedValue?.toLowerCase() ||
                     item?.toLowerCase() === color?.toLowerCase();
                   return (
                     <li

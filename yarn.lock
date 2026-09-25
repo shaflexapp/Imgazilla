@@ -1529,11 +1529,6 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.5.tgz#4fc56c15c580b9adb7dc3c333a134e540b44bfb1"
   integrity sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==
 
-"@lemonsqueezy/lemonsqueezy.js@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@lemonsqueezy/lemonsqueezy.js/-/lemonsqueezy.js-4.0.0.tgz#69b01731e4fed70a2a838e683e35f79655cadded"
-  integrity sha512-xcY1/lDrY7CpIF98WKiL1ElsfoVhddP7FT0fw7ssOzrFqQsr44HgolKrQZxd9SywsCPn12OTOUieqDIokI3mFg==
-
 "@module-federation/runtime-tools@0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@module-federation/runtime-tools/-/runtime-tools-0.5.1.tgz#1b1f93837159a6bf0c0ba78730d589a5a8f74aa3"

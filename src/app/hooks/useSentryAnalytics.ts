@@ -12,10 +12,15 @@ export const useSentryAnalytics = () => {
   return useCallback((event: AnalyticsEvent) => {
     const { eventName, category, label, value } = event;
 
-    Sentry.metrics.increment(eventName, value, {
-      tags: {
+    // Sentry v9 removed the metrics API; record the event as a breadcrumb instead
+    Sentry.addBreadcrumb({
+      category: 'analytics',
+      message: eventName,
+      level: 'info',
+      data: {
         category,
         label,
+        value,
       },
     });
   }, []);

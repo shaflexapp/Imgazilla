@@ -13,7 +13,6 @@ export { ImageOptimizationResult } from '@/app/components/shared/ImageOptimizati
 export { ImageOptimizationResultItem } from '@/app/components/shared/ImageOptimization/ImageOptimizationResult/ImageOptimizationResultItem/ImageOptimizationResultItem';
 export { ImageOptimizationResultList } from '@/app/components/shared/ImageOptimization/ImageOptimizationResult/ImageOptimizationResultList/ImageOptimizationResultList';
 export { ImageOptimizationResultSettings } from '@/app/components/shared/ImageOptimization/ImageOptimizationResult/ImageOptimizationResultSettings/ImageOptimizationResultSettings';
-export { TicTacToe } from '@/app/components/shared/TicTacToe/TicTacToe';
 export { ImageOptimizationPanel } from '@/app/components/shared/ImageOptimization/ImageOptimizationPanel/ImageOptimizationPanel';
 export { ImageOptimizationPanelItem } from '@/app/components/shared/ImageOptimization/ImageOptimizationPanel/ImageOptimizationPanelItem/ImageOptimizationPanelItem';
 export { BonusModal } from '@/app/components/shared/BonusModal/BonusModal';
@@ -65,7 +64,6 @@ export * from '@/app/components/ui/Tooltip/Tooltip';
 export * from '@/app/components/ui/Select/Select';
 export * from '@/app/components/ui/AnimatedBackground/AnimatedBackground';
 export * from '@/app/components/ui/DropdownMenu/DropdownMenu';
-export * from '@/app/components/ui/Confetti/Confetti';
 export * from '@/app/components/ui/Avatar/Avatar';
 
 export { ImagePreviewIcon } from '@/app/components/icons/ImagePreviewIcon/ImagePreviewIcon';

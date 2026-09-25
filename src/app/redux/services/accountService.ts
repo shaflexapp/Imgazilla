@@ -2,13 +2,16 @@ import { createBaseApi } from '@/app/redux/api';
 
 export const ACCOUNT_SERVICE_REDUCER_KEY = 'accountService';
 
+// Startup calls must settle so the plugin never hangs on the splash screen
+const STARTUP_REQUEST_TIMEOUT = 30000;
+
 const baseApi = createBaseApi(ACCOUNT_SERVICE_REDUCER_KEY);
 
 export interface CreateAccountBody {
   id: string;
   name: string;
   photoUrl: string;
-  credits: string;
+  credits?: string;
 }
 
 export const accountService = baseApi.injectEndpoints({
@@ -18,6 +21,7 @@ export const accountService = baseApi.injectEndpoints({
         url: '/account/updateAccount',
         method: 'PATCH',
         body: { id, photoUrl },
+        timeout: STARTUP_REQUEST_TIMEOUT,
       }),
     }),
 
@@ -26,6 +30,7 @@ export const accountService = baseApi.injectEndpoints({
         url: '/account/createAccount',
         method: 'POST',
         body: body,
+        timeout: STARTUP_REQUEST_TIMEOUT,
       }),
     }),
 

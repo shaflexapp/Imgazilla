@@ -1,13 +1,16 @@
 import React, { useCallback } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import { Account, Navigation } from '@/app/components';
 import { useMixpanel } from '@/app/hooks/useMixpanleAnalytics';
 import { TAB_ROUTES } from '@/app/constants';
+import { getActiveTabRouteKey } from '@/app/redux/features';
 
 export const TabsLayout = () => {
-  const ROUTE_KEYS = Object.keys(TAB_ROUTES);
   const trackClick = useMixpanel();
+  // Tab opened by the relaunch command; it only changes once, on startup
+  const activeTabRouteKey = useSelector(getActiveTabRouteKey);
 
   const handleOnClick = useCallback((item: string) => {
     trackClick('click', {
@@ -17,7 +20,7 @@ export const TabsLayout = () => {
 
   return (
     <div className='flex p-3 h-full w-full'>
-      <Navigation defaultValue={ROUTE_KEYS[0]}>
+      <Navigation key={activeTabRouteKey} defaultValue={activeTabRouteKey}>
         <div className='flex justify-center gap-1.5'>
           <Navigation.List>
             {Object.keys(TAB_ROUTES).map((item, index) => {

@@ -1,11 +1,16 @@
 import React from 'react';
 import { RouterProvider } from 'react-router-dom';
-import { withProfiler } from '@sentry/react';
+import { ErrorBoundary, withProfiler } from '@sentry/react';
 
 import { ThemeProvider } from '@/app/components/theme-provider';
 import { ReduxProvider } from '@/app/redux/provider';
 import { AccountStatusChecker } from '@/app/HOC/AccountStatusChecker';
-import { BonusModal, Toaster } from '@/app/components';
+import {
+  AnimatedPage,
+  BonusModal,
+  ErrorComponent,
+  Toaster,
+} from '@/app/components';
 import { WithDefaultTabSetter } from '@/app/HOC/WithDefaultTabSetter';
 import { WithGlobalPluginSettingsProvider } from '@/app/HOC/WithGlobalPluginSettings';
 import { initSentry } from '@/app/configs/sentry.config';
@@ -25,15 +30,25 @@ const App = () => {
         disableTransitionOnChange
       >
         <div className='bg-primary-mainDark h-full'>
-          <AccountStatusChecker>
+          {/* Reports render crashes to Sentry and shows the error screen instead of a blank plugin */}
+          <ErrorBoundary
+            fallback={
+              <AnimatedPage>
+                <ErrorComponent />
+              </AnimatedPage>
+            }
+          >
+            {/* Outside AccountStatusChecker so the relaunch command and the startup plugin settings are handled even during the splash */}
             <WithDefaultTabSetter>
               <WithGlobalPluginSettingsProvider>
-                <RouterProvider router={router} />
+                <AccountStatusChecker>
+                  <RouterProvider router={router} />
+                </AccountStatusChecker>
               </WithGlobalPluginSettingsProvider>
             </WithDefaultTabSetter>
-          </AccountStatusChecker>
-          <Toaster />
-          <BonusModal />
+            <Toaster />
+            <BonusModal />
+          </ErrorBoundary>
         </div>
       </ThemeProvider>
     </ReduxProvider>

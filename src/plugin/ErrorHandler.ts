@@ -11,9 +11,7 @@ export class ErrorHandler {
   handleMultipleSelections() {
     const errorMessage: MessageType = {
       type: EventType.MULTIPLE_NODES_SELECTED_ERROR,
-      payload: {
-        message: 'Multiple nodes are selected.',
-      },
+      payload: null,
     };
     this.sendMessageToUI(errorMessage);
   }
@@ -21,9 +19,7 @@ export class ErrorHandler {
   handleNonSquareNode() {
     const errorMessage: MessageType = {
       type: EventType.NON_SQUARE_NODE_SELECTED_ERROR,
-      payload: {
-        message: 'Selected node is not square.',
-      },
+      payload: null,
     };
     this.sendMessageToUI(errorMessage);
   }

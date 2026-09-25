@@ -13,7 +13,11 @@ export const ImageOptimizationResultItem = ({ item, className }: Props) => {
   const { name, sourceImageSize, format, optimizedImageSize } = item;
 
   //TODO: Update all file format to one format as backend.
-  const fileFormat = format === 'webp' ? WEB_P_FORMAT : format.toUpperCase();
+  const fileFormat =
+    format === 'webp' ? WEB_P_FORMAT : String(format ?? '').toUpperCase();
+  const mimeType =
+    FORMAT_TO_MIME_TYPE[fileFormat] ??
+    `image/${format === 'jpg' ? 'jpeg' : format}`;
 
   const isShowSourceSize =
     optimizedImageSize.toFixed(2) <= sourceImageSize.toFixed(2);
@@ -29,7 +33,7 @@ export const ImageOptimizationResultItem = ({ item, className }: Props) => {
         <div className='flex items-center space-x-3'>
           <div className='w-12 h-12 bg-gray-200 flex items-center justify-center overflow-hidden preview rounded-md'>
             <img
-              src={`data:${FORMAT_TO_MIME_TYPE[fileFormat]};base64,${item.base64Image}`}
+              src={`data:${mimeType};base64,${item.base64Image}`}
               alt={name}
               className='rounded-md min-w-full min-h-full object-cover'
             />

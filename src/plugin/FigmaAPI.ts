@@ -9,6 +9,7 @@ export class FigmaAPI {
   private messageSender: MessageSender;
   private errorHandler: ErrorHandler;
   private logger: Logger;
+  private selectionChangeId = 0;
 
   constructor() {
     this.messageSender = new MessageSender();
@@ -49,9 +50,14 @@ export class FigmaAPI {
   }
 
   async handleSelectionChange() {
+    const changeId = ++this.selectionChangeId;
     const selectedNodes = figma.currentPage.selection;
 
     if (selectedNodes.length === 0) {
+      this.sendMessageToUI({
+        type: EventType.SELECTION_CLEARED,
+        payload: null,
+      });
       return;
     }
 
@@ -77,6 +83,11 @@ export class FigmaAPI {
           value: 1,
         },
       });
+
+      // The selection changed again (e.g. was cleared) while exporting, so this image is stale.
+      if (changeId !== this.selectionChangeId) {
+        return;
+      }
 
       const message = {
         type: EventType.IMAGE_UNIT_ARRAY_DATA,

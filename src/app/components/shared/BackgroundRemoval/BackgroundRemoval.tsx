@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 
 import { encode } from 'base64-arraybuffer-es6';
@@ -41,9 +47,16 @@ import {
   useRemoveImageBackgroundMutation,
 } from '@/app/redux/services';
 import { base64ToUint8Array } from '@/app/lib/utils';
+import {
+  getJobErrorMessage,
+  getJobStatus,
+  isJobResultSuccessful,
+  JOB_POLLING_INTERVAL,
+  JOB_SLOW_NOTICE_DELAY,
+  JOB_SLOW_NOTICE_MESSAGE,
+  JOB_STATUS,
+} from '@/app/lib/jobPolling';
 import { useMixpanel } from '@/app/hooks/useMixpanleAnalytics';
-
-const POOLING_INTERVAL = 3000;
 
 export const BackgroundRemoval = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,13 +67,17 @@ export const BackgroundRemoval = () => {
   const [name, setName] = useState('image');
   const [dimensions, setDimensions] = useState({ width: 300, height: 300 });
 
-  const [pollingInterval, setPollingInterval] = useState(POOLING_INTERVAL);
+  const [pollingInterval, setPollingInterval] = useState(JOB_POLLING_INTERVAL);
 
   const processedImageData = useSelector(getBackgroundRemovalProcessResult);
   const jobId = useSelector(getBackgroundRemovalProcessJobId);
+  const currentJobIdRef = useRef(jobId);
 
   const [removeBackground] = useRemoveImageBackgroundMutation();
-  const [getProcessStatus, { data }] =
+  // `currentData`/`error` belong to `lastArg`, the job last passed to
+  // `getProcessStatus`. It still points at the previous job until the new one
+  // is polled, so the status is only applied when `lastArg` matches `jobId`.
+  const [getProcessStatus, { currentData: data, error }, { lastArg }] =
     useLazyGetBackgroundRemovalProcessStatusQuery({
       pollingInterval,
     });
@@ -89,6 +106,16 @@ export const BackgroundRemoval = () => {
     [processedImageData],
   );
 
+  const handleOnJobError = useCallback((description: string) => {
+    setPollingInterval(0);
+    dispatch(setBackgroundRemovalJobId({ jobId: undefined }));
+    setIsLoading(false);
+
+    toast('Error', {
+      description,
+    });
+  }, []);
+
   const handleOnRemoveBackground = useCallback(() => {
     setIsProcessing(true);
     setIsLoading(true);
@@ -100,6 +127,7 @@ export const BackgroundRemoval = () => {
     removeBackground({ image: encode(imageData) })
       .unwrap()
       .then(({ jobId }: { jobId: string }) => {
+        setPollingInterval(JOB_POLLING_INTERVAL);
         dispatch(setBackgroundRemovalJobId({ jobId }));
       })
       .catch((error) => {
@@ -153,7 +181,7 @@ export const BackgroundRemoval = () => {
   const handleOnRefreshSelectedNode = useCallback(() => {
     dispatch(resetBackgroundRemovalState());
     dispatch(baseApi.util.resetApiState());
-    setPollingInterval(POOLING_INTERVAL);
+    setPollingInterval(JOB_POLLING_INTERVAL);
 
     onCheckSelectedImages();
   }, []);
@@ -207,34 +235,79 @@ export const BackgroundRemoval = () => {
   }, [jobId, isLoading, isProcessing, processedImageData]);
 
   useEffect(() => {
-    if (!data || processedImageData) {
+    currentJobIdRef.current = jobId;
+  }, [jobId]);
+
+  // The job is already paid for: keep polling it and never offer a new paid
+  // attempt while it may still be running, only let the user know it is slow.
+  useEffect(() => {
+    if (!jobId || processedImageData) {
       return;
     }
 
-    if (data?.status === 200) {
-      setPollingInterval(0);
+    const timeoutId = setTimeout(() => {
+      toast.info('Still processing', {
+        description: JOB_SLOW_NOTICE_MESSAGE,
+      });
+    }, JOB_SLOW_NOTICE_DELAY);
 
-      getBackgroundRemovalResult(jobId)
-        .unwrap()
-        .then(({ result: processedImageData }) => {
-          dispatch(setBackgroundRemovalResult({ processedImageData }));
-          getAccountCredits('')
-            .unwrap()
-            .then((credits: string) => {
-              dispatch(updateAccountCredits({ credits }));
-            })
-            .finally(() => {
-              setIsLoading(false);
-            });
-        })
-        .catch(() => {
-          toast('Error', {
-            description: 'Something went wrong, please try again!',
-          });
-          setIsLoading(false);
-        });
+    return () => clearTimeout(timeoutId);
+  }, [jobId, processedImageData]);
+
+  useEffect(() => {
+    // A retry after a failed job must not reuse that job's terminal status.
+    if (!jobId || processedImageData || lastArg !== jobId) {
+      return;
     }
-  }, [jobId, data, processedImageData]);
+
+    const jobStatus = getJobStatus(data, error);
+
+    if (jobStatus === JOB_STATUS.PROCESSING) {
+      return;
+    }
+
+    setPollingInterval(0);
+
+    if (jobStatus !== JOB_STATUS.COMPLETED) {
+      handleOnJobError(getJobErrorMessage(jobStatus, data, error));
+      return;
+    }
+
+    getBackgroundRemovalResult(jobId)
+      .unwrap()
+      .then((response) => {
+        // The selection was refreshed in the meantime.
+        if (currentJobIdRef.current !== jobId) {
+          return;
+        }
+
+        const processedImageData = response?.result;
+
+        if (!isJobResultSuccessful(response) || !processedImageData) {
+          handleOnJobError(
+            getJobErrorMessage(JOB_STATUS.FAILED, response ?? undefined),
+          );
+          return;
+        }
+
+        dispatch(setBackgroundRemovalResult({ processedImageData }));
+        getAccountCredits('')
+          .unwrap()
+          .then((credits: string) => {
+            dispatch(updateAccountCredits({ credits }));
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      })
+      .catch(() => {
+        if (currentJobIdRef.current !== jobId) {
+          return;
+        }
+
+        handleOnJobError('Something went wrong, please try again!');
+      });
+  }, [jobId, lastArg, data, error, processedImageData]);
 
   return (
     <>

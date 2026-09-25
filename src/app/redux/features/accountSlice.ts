@@ -6,6 +6,8 @@ export interface AccountState {
   name: string;
   figmaUserID: string;
   photoUrl: string;
+  // null until the API reports it (older API versions don't return it)
+  hasBonus?: boolean | null;
 }
 
 const initialState = {
@@ -13,7 +15,12 @@ const initialState = {
   name: null,
   figmaUserID: null,
   photoUrl: null,
+  hasBonus: null,
 } satisfies AccountState as AccountState;
+
+// The API may return credits as a string (varchar column) or as a number
+const toCredits = (credits: string | number | null | undefined): string =>
+  credits === null || credits === undefined ? null : String(credits);
 
 export const accountSlice = createSlice({
   name: 'account',
@@ -23,15 +30,29 @@ export const accountSlice = createSlice({
       state.name = action.payload.name;
       state.figmaUserID = action.payload.figmaUserID;
       state.photoUrl = action.payload.photoUrl;
-      state.credits = action.payload.credits;
+      state.credits = toCredits(action.payload.credits);
+      state.hasBonus =
+        typeof action.payload.hasBonus === 'boolean'
+          ? action.payload.hasBonus
+          : null;
     },
 
-    updateAccountCredits(state, action: PayloadAction<{ credits: string }>) {
-      state.credits = action.payload.credits;
+    updateAccountCredits(
+      state,
+      action: PayloadAction<{ credits: string | number }>,
+    ) {
+      state.credits = toCredits(action.payload.credits);
+    },
+
+    setAccountHasBonus(state, action: PayloadAction<boolean>) {
+      state.hasBonus = action.payload;
     },
   },
 });
 
 export const getAccount = (state: RootState) => state.account;
 
-export const { setAccount, updateAccountCredits } = accountSlice.actions;
+export const getAccountHasBonus = (state: RootState) => state.account.hasBonus;
+
+export const { setAccount, updateAccountCredits, setAccountHasBonus } =
+  accountSlice.actions;

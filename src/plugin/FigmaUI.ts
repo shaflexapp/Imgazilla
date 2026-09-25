@@ -10,6 +10,7 @@ import { RELAUNCH_DATA_STORE_KEY } from '@/plugin/constants';
 import { CommandHandler } from '@/plugin/CommandHandler';
 import { FigmaGlobalSettingsManager } from '@/plugin/FigmaGlobalSettingsManager';
 import { FigmaStorageManager } from '@/plugin/FigmaStorageManager';
+import { Logger } from '@/plugin/Logger';
 
 export class FigmaUI {
   private readonly width: number = 700;
@@ -23,6 +24,7 @@ export class FigmaUI {
   private pluginDataStorage: PluginDataStorage;
   private commandHandler: CommandHandler;
   private globalSettings: FigmaGlobalSettingsManager;
+  private logger: Logger;
 
   private readonly storageManager: FigmaStorageManager;
 
@@ -39,10 +41,22 @@ export class FigmaUI {
     this.commandHandler = new CommandHandler();
     this.globalSettings = new FigmaGlobalSettingsManager();
     this.storageManager = new FigmaStorageManager();
+    this.logger = new Logger();
   }
 
   async init() {
     this.clearConsole();
+
+    // Subscribe before any await, otherwise early UI requests
+    // (e.g. GET_CLIENT_STORAGE_DATA on mount) are dropped.
+    this.figmaUIMessaging.subscribe((message: MessageType) =>
+      this.handleUIMessage(message).catch((e) =>
+        this.logger.logError(`Failed to handle "${message?.type}": ${e}`),
+      ),
+    );
+    await this.figmaEventManager.addSelectionChangeListener(() =>
+      this.figmaAPI.handleSelectionChange(),
+    );
 
     this.commandHandler.handleCommand();
 
@@ -55,13 +69,6 @@ export class FigmaUI {
     this.figmaAPI.sendCurrentUserInformation();
     // We call this function for first time and check if user selected right node
     await this.figmaAPI.handleSelectionChange();
-
-    this.figmaUIMessaging.subscribe((message: MessageType) =>
-      this.handleUIMessage(message),
-    );
-    await this.figmaEventManager.addSelectionChangeListener(() =>
-      this.figmaAPI.handleSelectionChange(),
-    );
 
     if (!Boolean(relaunchData)) {
       this.setRelaunchData();

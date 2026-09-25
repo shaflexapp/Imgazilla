@@ -3,7 +3,8 @@ import CryptoJS from 'crypto-js';
 
 const secret = process.env.REQUESTS_SECRET_KEY;
 
-const exceptedEndpoints = ['checkAccount', 'createAccount'];
+// Startup account calls identify the user by the body `id`, not by x-Figma-id
+const exceptedEndpoints = ['updateAccount', 'createAccount'];
 
 export const encrypt = (value: string): string => {
   return CryptoJS.AES.encrypt(value, secret).toString();
@@ -17,9 +18,10 @@ export const generateSignature = (body: any) => {
 export const prepareHeaders = (
   headers: Headers,
   endpoint: string,
-  figmaId: string,
+  figmaId?: string | null,
 ) => {
-  if (!exceptedEndpoints.includes(endpoint)) {
+  // Never send a placeholder identity: omit the header until the account is loaded
+  if (!exceptedEndpoints.includes(endpoint) && figmaId) {
     const encryptedId = encrypt(figmaId);
     headers.set('x-Figma-id', encryptedId);
   }

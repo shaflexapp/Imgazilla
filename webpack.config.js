@@ -1,10 +1,39 @@
+const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
 const Dotenv = require('dotenv-webpack');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 
-module.exports = (_env, { mode }) => ({
+const getEnvFile = (mode) =>
+  mode === 'production' ? '.env' : '.env.development.local';
+
+// An existing env file fully controls the bundle, as before. Without one
+// (e.g. in CI) the values come from the build environment instead.
+const hasEnvFile = (mode) => fs.existsSync(getEnvFile(mode));
+
+const assertProductionEnv = (mode) => {
+  if (mode !== 'production') return;
+
+  const envFile = getEnvFile(mode);
+  const env = hasEnvFile(mode)
+    ? dotenv.parse(fs.readFileSync(envFile))
+    : process.env;
+
+  if (!env.BASE_API_URL || !env.BASE_API_URL.trim()) {
+    throw new Error(
+      `BASE_API_URL is not set, so the plugin would not know where the API is. ` +
+        (hasEnvFile(mode)
+          ? `Add BASE_API_URL=https://imgazilla.app/api to ${envFile} ` +
+            '(the build environment is only read when there is no env file).'
+          : `Create ${envFile} from .env.example, or pass it in the environment: ` +
+            'BASE_API_URL=https://imgazilla.app/api yarn build'),
+    );
+  }
+};
+
+const createConfig = (_env, { mode }) => ({
   mode: mode === 'production' ? 'production' : 'development',
   devtool: mode === 'production' ? false : 'inline-source-map',
   entry: {
@@ -79,7 +108,9 @@ module.exports = (_env, { mode }) => ({
 
   plugins: [
     new Dotenv({
-      path: mode === 'production' ? '.env' : '.env.development.local',
+      path: getEnvFile(mode),
+      systemvars: !hasEnvFile(mode),
+      silent: !hasEnvFile(mode),
     }),
     new HtmlWebpackPlugin({
       template: './src/app/index.html',
@@ -91,3 +122,9 @@ module.exports = (_env, { mode }) => ({
     new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/ui/]),
   ],
 });
+
+module.exports = (env, argv) => {
+  assertProductionEnv(argv.mode);
+
+  return createConfig(env, argv);
+};
