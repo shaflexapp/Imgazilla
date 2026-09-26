@@ -1,6 +1,211 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import 'tailwindcss' source(none);
+@import 'tw-animate-css';
+
+/* Same files as the v3 `content` setting. */
+@source '../**/*.{ts,tsx}';
+
+/* next-themes puts the `dark` class on <html>. */
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Tailwind CSS v4 only applies `hover:` when the device supports hover
+  (@media (hover: hover)). Keep the v3 behaviour.
+*/
+@custom-variant hover (&:hover);
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+@theme {
+  /*
+    The v3 values of the default colours this UI uses. The v4 palette is
+    defined in oklch and renders slightly differently.
+  */
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-red-50: #fef2f2;
+  --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-amber-400: #fbbf24;
+  --color-amber-600: #d97706;
+  --color-blue-400: #60a5fa;
+  --color-blue-600: #2563eb;
+  --color-emerald-500: #10b981;
+  --color-sky-500: #0ea5e9;
+
+  /*
+    v3 font sizes set a fixed line height (e.g. text-sm: 1.25rem), which
+    children inherit as that length. v4 uses a ratio instead.
+  */
+  --text-xs--line-height: 1rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+
+  --width-previewSquareWidth: 150px;
+
+  --height-previewSquareHeight: 150px;
+
+  --shadow-custom: 0 8px 12px 6px rgba(0, 0, 0, 0.15);
+  --shadow-customLight: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-move-up: move-up 0.8s ease-in-out 3;
+
+  @keyframes move-up {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+/*
+  Tokens that point at the CSS variables below. `inline` makes the utilities
+  use the variables directly (e.g. `hsl(var(--main-dark))`), as in v3.
+*/
+@theme inline {
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: hsl(var(--ring));
+
+  --color-dialog-background: var(--dialog-background);
+
+  --color-background: var(--background);
+  --color-tabBG: var(--tab-background-color);
+  --color-switchBG: var(--switch-bg-color);
+  --color-switchBGDefault: var(--switch-bg-color-default);
+  --color-switchBGThumb: var(--switch-bg-color-thumb);
+  --color-tabBorderBottom: var(--tab-border-bottom-color);
+  --color-borderSquare: var(--border-square);
+  --color-foreground: hsl(var(--foreground));
+  --color-exportButtonBGColor: var(--export-button-bg-color);
+  --color-exportButtonShadowFrom: var(--export-button-shadow-gradient-from);
+  --color-exportButtonShadowTo: var(--export-button-shadow-gradient-to);
+  --color-midnight-slate: var(--price-bg-color);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-gray: var(--primary-gray);
+  --color-primary-white: var(--primary-white);
+  --color-primary-code: var(--code-color);
+  --color-primary-coralBlush: var(--coral-blush-color);
+  --color-primary-grayBG: var(--gray-bg-color);
+  --color-primary-grayCard: var(--gray-card-color);
+  --color-primary-darkGreen: hsl(var(--dark-green));
+  --color-primary-lightGreen: var(--light-green);
+  --color-primary-primaryDark: var(--primary-dark);
+  --color-primary-secondDark: var(--second-dark);
+  --color-primary-dark: var(--dark);
+  --color-primary-mainDark: hsl(var(--main-dark));
+  --color-primary-green: hsl(var(--green));
+  --color-primary-lightBlue: hsl(var(--light-blue));
+  --color-primary-lightYellow: hsl(var(--light-yellow));
+  --color-primary-lightRed: hsl(var(--light-red));
+  --color-primary-lightGray: var(--light-gray);
+  --color-primary-redLight: var(--red-light);
+  --color-primary-brightCyan: hsl(var(--bright-cyan));
+  --color-primary-darkGray: var(--dark-gray);
+  --color-primary-darkText: var(--dark-text);
+  --color-primary-strongGreen: var(--strong-green);
+  --color-primary-normalGray: var(--normal-gray);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  /*
+    The v3 drop-shadow-md (v4 changed it). Inline, so each of the two shadows
+    becomes its own drop-shadow() filter.
+  */
+  --drop-shadow-md: 0 4px 3px rgb(0 0 0 / 0.07), 0 2px 2px rgb(0 0 0 / 0.06);
+}
+
+/*
+  v3 preflight defaults that v4 changed: the default border colour
+  (gray-200, now currentcolor), the placeholder colour (gray-400, now 50% of
+  the text colour) and the pointer cursor on buttons (now default).
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
 
 @layer base {
   :root {

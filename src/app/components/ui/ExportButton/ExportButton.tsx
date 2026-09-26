@@ -33,7 +33,7 @@ export const ExportButton = ({
           variant='dark'
           onClick={onBack}
           disabled={isOptimizationStarted}
-          className='flex flex-row justify-center items-center gap-2.5 rounded-lg border border-primary-primaryDark px-3 py-2 text-sm !h-10'
+          className='flex flex-row justify-center items-center gap-2.5 rounded-lg border border-primary-primaryDark px-3 py-2 text-sm h-10!'
         >
           <ArrowLeft size={16} className='stroke-borderSquare' />
           <p>Back</p>

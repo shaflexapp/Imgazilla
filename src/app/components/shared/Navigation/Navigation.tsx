@@ -83,7 +83,7 @@ const NavigationList: FC<{ children: ReactNode }> = ({ children }) => {
   const { slipperyRef } = context;
 
   return (
-    <div className='w-full flex relative z-1 bg-primary-secondDark rounded-lg border px-0.5 py-0.5 gap-1.5 border-primary-primaryDark'>
+    <div className='w-full flex relative bg-primary-secondDark rounded-lg border px-0.5 py-0.5 gap-1.5 border-primary-primaryDark'>
       {children}
       <li
         ref={slipperyRef}
@@ -151,7 +151,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
         ref={handleAddElementRef}
         onClick={handleActiveItem}
         className={cn(
-          'relative z-10 !p-2 transition-colors duration-300 text-sm',
+          'relative z-10 p-2! transition-colors duration-300 text-sm',
           isActive
             ? 'text-primary-secondDark hover:!text-primary-secondDark'
             : 'hover:!text-primary-secondDark font-normal',
@@ -169,7 +169,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
       ref={handleAddElementRef}
       variant='ghost'
       className={cn(
-        'relative z-10 !p-2 transition-colors duration-300',
+        'relative z-10 p-2! transition-colors duration-300',
         isActive
           ? 'text-primary-secondDark hover:!text-primary-secondDark'
           : 'hover:!text-primary-secondDark font-normal',

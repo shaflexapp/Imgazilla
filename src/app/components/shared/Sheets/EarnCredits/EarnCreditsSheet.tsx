@@ -72,7 +72,7 @@ export const EarnCreditsSheet = ({
           <SheetDescription className='text-primary-gray font-bold text-center'>
             All credits stack.
           </SheetDescription>
-          <div className='!my-8'>
+          <div className='mt-6 mb-8'>
             <Separator />
           </div>
         </SheetHeader>

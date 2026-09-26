@@ -50,7 +50,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
   return (
     <div
       ref={containerRef}
-      className='relative overflow-hidden border border-primary-lightGreen rounded-md border-dashed outline-none bg-transparent focus:outline-none focus:bg-transparent select-none'
+      className='relative overflow-hidden border border-primary-lightGreen rounded-md border-dashed outline-hidden bg-transparent focus:outline-hidden focus:bg-transparent select-none'
       style={{ width: `${width}px`, height: `${height}px` }}
       onMouseDown={handleMouseDown}
     >
@@ -58,7 +58,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       <img
         src={beforeImage}
         alt='Before'
-        className='absolute top-0 left-0 h-full w-full object-cover outline-none bg-transparent focus:outline-none focus:bg-transparent'
+        className='absolute top-0 left-0 h-full w-full object-cover outline-hidden bg-transparent focus:outline-hidden focus:bg-transparent'
         style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
         draggable='false'
       />
@@ -67,7 +67,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
       <img
         src={afterImage}
         alt='After'
-        className='absolute top-0 left-0 h-full w-full object-cover outline-none bg-transparent focus:outline-none focus:bg-transparent'
+        className='absolute top-0 left-0 h-full w-full object-cover outline-hidden bg-transparent focus:outline-hidden focus:bg-transparent'
         draggable='false'
       />
 
@@ -78,7 +78,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
         }}
       >
         <div className='w-0.5 h-full bg-primary-lightGreen opacity-80 cursor-ew-resize' />
-        <div className='w-2.5 h-2.5 bg-primary-lightGreen rounded-full absolute top-1/2 -translate-y-1/2 -ml-1 cursor-ew-resize focus:outline-none focus:bg-transparent' />
+        <div className='w-2.5 h-2.5 bg-primary-lightGreen rounded-full absolute top-1/2 -translate-y-1/2 -ml-1 cursor-ew-resize focus:outline-hidden focus:bg-transparent' />
       </div>
     </div>
   );

@@ -82,7 +82,7 @@ export const ColorPicker = ({
         onClick={handleOnOpen}
       >
         {!color ? (
-          <div className='w-[17px] h-[1px] bg-red-600 -rotate-45' />
+          <div className='w-[17px] h-px bg-red-600 -rotate-45' />
         ) : null}
       </div>
       {isOpen ? (
@@ -95,7 +95,7 @@ export const ColorPicker = ({
               className='flex relative justify-center items-center h-4 w-4 border border-primary-primaryDark rounded-md hover:cursor-pointer bg-white'
               onClick={() => handleOnSelectHistoryColor('')}
             >
-              <span className='w-[12px] h-[1px] bg-red-600 -rotate-45' />
+              <span className='w-[12px] h-px bg-red-600 -rotate-45' />
             </li>
             {history
               ? history.map((item) => {
@@ -132,7 +132,7 @@ export const ColorPicker = ({
                 <input
                   type='text'
                   placeholder='hex color'
-                  className='bg-primary-mainDark focus:outline-none rounded-md max-w-20 placeholder:text-sm placeholder:text-gray-700'
+                  className='bg-primary-mainDark focus:outline-hidden rounded-md max-w-20 placeholder:text-sm placeholder:text-gray-700'
                   value={value}
                   onChange={handleOnChange}
                 />

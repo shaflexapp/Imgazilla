@@ -171,7 +171,7 @@ export const FaviconSettingsForm = ({ onSubmit }: Props) => {
               control={form.control}
               name='themeColor'
               render={({ field }) => (
-                <FormItem className='flex flex-row items-center gap-4 relative'>
+                <FormItem className='flex flex-row items-center gap-4 relative space-y-0'>
                   <FormControl>
                     <ColorPicker
                       onChange={handleThemeColorChange}
@@ -182,7 +182,7 @@ export const FaviconSettingsForm = ({ onSubmit }: Props) => {
                       }
                     />
                   </FormControl>
-                  <FormLabel className='font-light text-sm !mt-0'>
+                  <FormLabel className='font-light text-sm mt-0!'>
                     Theme color
                   </FormLabel>
                 </FormItem>
@@ -192,7 +192,7 @@ export const FaviconSettingsForm = ({ onSubmit }: Props) => {
               control={form.control}
               name='bgColor'
               render={({ field }) => (
-                <FormItem className='flex flex-row items-center gap-4 relative'>
+                <FormItem className='flex flex-row items-center gap-4 relative space-y-0'>
                   <FormControl>
                     <ColorPicker
                       color={field.value}
@@ -201,7 +201,7 @@ export const FaviconSettingsForm = ({ onSubmit }: Props) => {
                       onSelectHistoryColor={handleOnSelectBgHistoryColor}
                     />
                   </FormControl>
-                  <FormLabel className='font-light text-sm !mt-0'>
+                  <FormLabel className='font-light text-sm mt-0!'>
                     Background color
                   </FormLabel>
                 </FormItem>

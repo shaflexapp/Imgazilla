@@ -15,8 +15,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className='toaster group'
       toastOptions={{
         classNames: {
+          // Tailwind v4 utilities live in a cascade layer, so Sonner's own
+          // (unlayered) toast styles would win. `!` keeps these on top, as
+          // their higher specificity did before.
           toast:
-            'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg',
+            'group toast group-[.toaster]:bg-background! group-[.toaster]:text-foreground! group-[.toaster]:border-border! group-[.toaster]:shadow-lg!',
           description: 'group-[.toast]:text-muted-foreground',
           actionButton:
             'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',

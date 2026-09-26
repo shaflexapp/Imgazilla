@@ -14,12 +14,12 @@ export const ImagePreview = ({ imageUrl }: Props) => {
   return (
     <div className='flex flex-col justify-center items-center mb-[29px]'>
       <div className='flex'>
-        <div className='flex justify-center items-center w-[150px] h-[150px] mb-[3px]'>
+        <div className='flex justify-center items-center w-previewSquareWidth h-previewSquareHeight mb-[3px]'>
           <img
             src={imageUrl}
             alt='Preview favicon image'
             className={cn(
-              'w-[150px] h-[150px] border border-borderSquare preview',
+              'w-previewSquareWidth h-previewSquareHeight border border-borderSquare preview',
               isBackgroundColor ? 'bg-none' : '',
             )}
             style={{ backgroundColor: formSettings.bgColor }}
