@@ -2,10 +2,8 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useSelector } from 'react-redux';
 
-import {
-  Prism as SyntaxHighlighter,
-  type SyntaxHighlighterProps,
-} from 'react-syntax-highlighter';
+import { type SyntaxHighlighterProps } from 'react-syntax-highlighter';
+import { SyntaxHighlighter } from '@/app/lib/syntaxHighlighter';
 import vscDarkPlus from '@/app/styles/code-styles';
 
 import { AnimatedTooltip, Button, Sheet, SheetContent } from '@/app/components';

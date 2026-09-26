@@ -29,3 +29,8 @@
 
 1. To change the UI of your plugin (the Reactjs code), start editing [App.tsx](src/app/App.tsx).  
 2. To interact with the Figma API edit [FigmaPlugin.ts](./src/plugin/FigmaPlugin.ts).
+
+## Browser support
+
+The plugin UI runs in the browser that runs Figma. Figma itself needs Chrome 120, Edge 121, Firefox 128 ESR or Safari 17.4 or later, and the Figma desktop app ships a current Chromium.
+The UI needs at least Chrome 111, Safari 16.4 or Firefox 128, the versions Tailwind CSS v4 requires. It also calls `Object.hasOwn` and `Array.prototype.at` while it loads. All browsers that Figma supports meet this.

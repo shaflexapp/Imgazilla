@@ -9,6 +9,26 @@
 
 const PLUGIN_NAME = 'InlineChunkHtmlPlugin';
 
+// The chunk source goes into <script> as is. Two sequences would make the HTML
+// parser end the inline script in the wrong place, so the page would break:
+// - "</script" closes the element early;
+// - "<!--" followed by "<script" (with no "-->" in between) keeps the real
+//   closing tag from ending the element.
+// Escaping them safely depends on the JS context (string, regexp, comment),
+// so the build fails instead and the plugin never ships a broken page.
+// In production builds terser already escapes them inside strings; the check
+// covers everything else, and development builds, which are not minified.
+const UNSAFE_INLINE_SCRIPT = [
+  { pattern: /<\/script/i, name: '"</script"' },
+  {
+    pattern: /<!(?=--)(?:(?!-->)[\s\S])*?<script[\t\n\f\r />]/i,
+    name: '"<!--" followed by "<script" without "-->" in between',
+  },
+];
+
+const findUnsafeSequence = (source) =>
+  UNSAFE_INLINE_SCRIPT.find(({ pattern }) => pattern.test(source));
+
 class InlineChunkHtmlPlugin {
   /**
    * @param {typeof import('html-webpack-plugin')} htmlWebpackPlugin
@@ -37,12 +57,23 @@ class InlineChunkHtmlPlugin {
       return tag;
     }
 
+    const source = asset.source.source().toString();
+    const unsafe = findUnsafeSequence(source);
+    if (unsafe) {
+      compilation.errors.push(
+        new compilation.compiler.webpack.WebpackError(
+          `${PLUGIN_NAME}: ${scriptName} contains ${unsafe.name}, so it ` +
+            'cannot be inlined into a <script> tag of the HTML page.',
+        ),
+      );
+    }
+
     return {
       tagName: 'script',
       voidTag: false,
       attributes: {},
       meta: { plugin: PLUGIN_NAME },
-      innerHTML: asset.source.source(),
+      innerHTML: source,
     };
   }
 
