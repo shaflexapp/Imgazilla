@@ -6,7 +6,6 @@ module.exports = defineConfig([
   globalIgnores([
     'eslint.config.js',
     'dist/**',
-    'tailwind.config.js',
     'svgo.config.js',
     'postcss.config.js',
     'webpack.config.js',
