@@ -47,6 +47,17 @@ const createConfig = (_env, { mode }) => ({
         use: [
           {
             loader: 'swc-loader',
+            options: {
+              // React 19 requires the automatic JSX runtime (react/jsx-runtime).
+              // The syntax is still detected from the file extension.
+              jsc: {
+                transform: {
+                  react: {
+                    runtime: 'automatic',
+                  },
+                },
+              },
+            },
           },
         ],
         exclude: /node_modules/,

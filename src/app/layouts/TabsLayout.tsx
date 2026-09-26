@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useCallback } from 'react';
+import { Outlet } from 'react-router';
 import { useSelector } from 'react-redux';
 
 import { Account, Navigation } from '@/app/components';

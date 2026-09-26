@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { ImageOptimizationPanelItem, MainContainer } from '@/app/components';
 
 import { useMixpanel } from '@/app/hooks/useMixpanleAnalytics';

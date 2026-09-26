@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaviconExporterSettings, FaviconPreview } from '@/app/components';
 
 export const FaviconExporter = () => {

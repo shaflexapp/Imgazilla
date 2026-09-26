@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import mixpanel from 'mixpanel-figma';
 import {

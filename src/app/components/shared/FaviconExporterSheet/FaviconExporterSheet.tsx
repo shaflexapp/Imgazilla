@@ -1,8 +1,11 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useSelector } from 'react-redux';
 
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import {
+  Prism as SyntaxHighlighter,
+  type SyntaxHighlighterProps,
+} from 'react-syntax-highlighter';
 import vscDarkPlus from '@/app/styles/code-styles';
 
 import { AnimatedTooltip, Button, Sheet, SheetContent } from '@/app/components';
@@ -72,7 +75,11 @@ export const FaviconExporterSheet = ({
           <span className='text-primary-code px-2'>{headTag}</span> section of
           your pages:
         </div>
-        <SyntaxHighlighter language='javascript' style={vscDarkPlus}>
+        <SyntaxHighlighter
+          language='javascript'
+          // code-styles holds plain strings (e.g. direction: 'ltr'), which TS widens to string
+          style={vscDarkPlus as SyntaxHighlighterProps['style']}
+        >
           {htmlSnippet}
         </SyntaxHighlighter>
         <div ref={elementToCopyRef} className='hidden'>

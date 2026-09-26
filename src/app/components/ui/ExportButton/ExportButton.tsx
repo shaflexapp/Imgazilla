@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/app/components';

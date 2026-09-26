@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { getFaviconSettings } from '@/app/redux/features';
 import { cn } from '@/app/lib/utils';

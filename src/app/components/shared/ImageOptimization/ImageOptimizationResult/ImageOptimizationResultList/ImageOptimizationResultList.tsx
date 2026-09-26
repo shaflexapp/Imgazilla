@@ -1,6 +1,5 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import {
   ImageOptimizationResultItem,

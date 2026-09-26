@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-} from 'react';
+import { createContext, ReactNode, useCallback, useContext } from 'react';
 import { useTypedDispatch } from '@/app/redux/store';
 
 import { EventType, UIEventType } from '@/eventType';

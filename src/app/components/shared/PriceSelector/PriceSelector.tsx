@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Coins } from 'lucide-react';
 
 import {

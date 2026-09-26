@@ -1,9 +1,4 @@
-import React from 'react';
-import {
-  createMemoryRouter,
-  RouteObject,
-  useRouteError,
-} from 'react-router-dom';
+import { createMemoryRouter, RouteObject, useRouteError } from 'react-router';
 
 import { TabsLayout } from '@/app/layouts/TabsLayout';
 import {

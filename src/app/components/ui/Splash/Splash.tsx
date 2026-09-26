@@ -1,4 +1,3 @@
-import React from 'react';
 export const Splash = () => {
   return (
     <div className='flex justify-center items-center w-full h-full'>

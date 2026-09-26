@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ArrowDown } from 'lucide-react';
 
 import { debounce } from 'lodash';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ImagePreviewIcon } from '@/app/components';
 export const EmptyImageSelector = () => {
   return (

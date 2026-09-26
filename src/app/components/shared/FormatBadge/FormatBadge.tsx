@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { cn } from '@/app/lib/utils';
 import {
   SVG_FORMAT,

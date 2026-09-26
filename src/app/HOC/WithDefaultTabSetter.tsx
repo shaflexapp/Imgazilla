@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { useWindowMessaging } from '@/app/hooks/useFigmaMessaging';
 import { EventType } from '@/eventType';
 import { useTypedDispatch } from '@/app/redux/store';

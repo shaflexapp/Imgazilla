@@ -1,5 +1,4 @@
-import React from 'react';
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider } from 'react-router/dom';
 import { ErrorBoundary, withProfiler } from '@sentry/react';
 
 import { ThemeProvider } from '@/app/components/theme-provider';
@@ -42,7 +41,12 @@ const App = () => {
             <WithDefaultTabSetter>
               <WithGlobalPluginSettingsProvider>
                 <AccountStatusChecker>
-                  <RouterProvider router={router} />
+                  {/*
+                    React Router 6 applied navigations synchronously; v7+ wraps
+                    them in startTransition unless this is false. Keep v6
+                    behaviour: the routes read Redux (useSyncExternalStore) state.
+                  */}
+                  <RouterProvider router={router} useTransitions={false} />
                 </AccountStatusChecker>
               </WithGlobalPluginSettingsProvider>
             </WithDefaultTabSetter>

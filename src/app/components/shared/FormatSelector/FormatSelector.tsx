@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
   AVIF_FORMAT,

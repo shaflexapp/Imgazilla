@@ -1,5 +1,5 @@
-import { AnimatePresence, Transition, motion } from 'framer-motion';
-import React, {
+import { AnimatePresence, Transition, motion } from 'motion/react';
+import {
   Children,
   cloneElement,
   ReactElement,

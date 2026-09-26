@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import { ReactNode } from 'react';
+import { NavLink } from 'react-router';
 
 type Props = {
   title: string | ReactNode;

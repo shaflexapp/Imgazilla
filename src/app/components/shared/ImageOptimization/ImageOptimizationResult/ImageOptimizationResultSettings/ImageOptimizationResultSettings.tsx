@@ -1,4 +1,3 @@
-import React from 'react';
 import { CircleChevronLeft } from 'lucide-react';
 
 import {

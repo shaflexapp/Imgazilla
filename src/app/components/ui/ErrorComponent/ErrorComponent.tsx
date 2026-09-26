@@ -1,4 +1,3 @@
-import React from 'react';
 import { ServerCrash } from 'lucide-react';
 // import { Button } from '@/app/components';
 // import { useWindowMessaging } from '@/app/hooks/useFigmaMessaging';

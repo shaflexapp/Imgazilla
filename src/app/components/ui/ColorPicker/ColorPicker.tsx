@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react';
+import { useRef, useState, useCallback, useMemo } from 'react';
 import { Plus } from 'lucide-react';
 import { debounce } from 'lodash';
 
@@ -31,7 +31,7 @@ export const ColorPicker = ({
   );
   const isDisabled = !validatedValue;
 
-  const popover = useRef();
+  const popover = useRef<HTMLDivElement>(null);
 
   const [isOpen, toggle] = useState(false);
 

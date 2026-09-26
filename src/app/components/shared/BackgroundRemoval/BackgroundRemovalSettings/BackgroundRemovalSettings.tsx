@@ -1,4 +1,3 @@
-import React from 'react';
 import { RefreshCcw } from 'lucide-react';
 
 import { Button } from '@/app/components';

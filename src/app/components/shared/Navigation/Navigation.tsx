@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -8,7 +8,7 @@ import React, {
   useEffect,
 } from 'react';
 
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 
 import { Button } from '@/app/components';
 import { cn } from '@/app/lib/utils';

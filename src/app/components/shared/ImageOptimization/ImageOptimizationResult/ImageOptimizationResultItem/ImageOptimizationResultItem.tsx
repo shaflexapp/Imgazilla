@@ -1,4 +1,3 @@
-import React from 'react';
 import { cn } from '@/app/lib/utils';
 import { FORMAT_TO_MIME_TYPE, WEB_P_FORMAT } from '@/app/constants';
 import { FormatBadge } from '@/app/components';

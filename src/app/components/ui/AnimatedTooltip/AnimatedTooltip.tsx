@@ -1,5 +1,4 @@
-import React from 'react';
-import { motion, useTransform, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useTransform, useMotionValue, useSpring } from 'motion/react';
 
 export const AnimatedTooltip = ({ children, isOpen }) => {
   const springConfig = { stiffness: 100, damping: 5 };
