@@ -1,6 +1,6 @@
-import { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { useWindowMessaging } from '@/app/hooks/useFigmaMessaging';
-import { EventType } from '@/eventType';
+import { EventType, UIEventType } from '@/eventType';
 import { useTypedDispatch } from '@/app/redux/store';
 import {
   FAVICON_TAB,
@@ -17,9 +17,15 @@ type Props = {
 };
 export const WithDefaultTabSetter = ({ children }: Props) => {
   const dispatch = useTypedDispatch();
+  // The launch command can arrive twice (startup push + reply to our request);
+  // apply it once so a late duplicate never overrides the user's own tab choice.
+  const hasOpenedLaunchTabRef = useRef(false);
 
   const openTab = useCallback(
     (tab: string) => {
+      if (hasOpenedLaunchTabRef.current) return;
+      hasOpenedLaunchTabRef.current = true;
+
       dispatch(setActiveTab(tab));
 
       // The relaunch command is sent once on startup: open its route
@@ -44,7 +50,12 @@ export const WithDefaultTabSetter = ({ children }: Props) => {
     [openTab],
   );
 
-  useWindowMessaging(handleFigmaPluginMessages);
+  const { onSendMessage } = useWindowMessaging(handleFigmaPluginMessages);
+
+  // Ask once we're listening, in case the startup push arrived before the UI mounted.
+  useEffect(() => {
+    onSendMessage({ type: UIEventType.GET_LAUNCH_COMMAND, payload: null });
+  }, [onSendMessage]);
 
   return <AnimatedPage>{children}</AnimatedPage>;
 };

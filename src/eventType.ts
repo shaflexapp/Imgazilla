@@ -21,4 +21,10 @@ export enum UIEventType {
   ADD_IMAGE_TO_PAGE = 'add_image_to_page',
   SET_CLIENT_STORAGE_DATA = 'set_client_storage_data',
   GET_CLIENT_STORAGE_DATA = 'get_client_storage_data',
+  // Startup state, requested by the UI once it is listening. The sandbox also pushes
+  // these once on launch, but a slow-loading UI can miss that push.
+  GET_USER_ACCOUNT_DATA = 'get_user_account_data',
+  GET_PLUGIN_SETTINGS = 'get_plugin_settings',
+  GET_LAUNCH_COMMAND = 'get_launch_command',
+  GET_SELECTION_PREVIEW = 'get_selection_preview',
 }

@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { EventType } from '@/eventType';
+import { EventType, UIEventType } from '@/eventType';
 
 import { useWindowMessaging } from '@/app/hooks/useFigmaMessaging';
 import { convertToImageUrl } from '@/app/lib/convertToImageUrl';
@@ -60,7 +60,13 @@ export const FaviconPreview = () => {
     setIsOpen(open);
   }, []);
 
-  useWindowMessaging(handleFigmaPluginMessages);
+  const { onSendMessage } = useWindowMessaging(handleFigmaPluginMessages);
+
+  // This component mounts after the account loads, so the startup selection push
+  // has usually already happened: ask for the current selection once we're listening.
+  useEffect(() => {
+    onSendMessage({ type: UIEventType.GET_SELECTION_PREVIEW, payload: null });
+  }, [onSendMessage]);
 
   // Without an image the empty state already asks for a selection.
   const isShowSelectionHint =

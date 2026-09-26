@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useCallback, useContext } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+} from 'react';
 import { useTypedDispatch } from '@/app/redux/store';
 
 import { EventType, UIEventType } from '@/eventType';
@@ -50,6 +56,11 @@ export const WithGlobalPluginSettingsProvider = ({ children }: Props) => {
   );
 
   const { onSendMessage } = useWindowMessaging(handleFigmaPluginMessages);
+
+  // Ask once we're listening, in case the startup push arrived before the UI mounted.
+  useEffect(() => {
+    onSendMessage({ type: UIEventType.GET_PLUGIN_SETTINGS, payload: null });
+  }, [onSendMessage]);
 
   return (
     <AnimatedPage>

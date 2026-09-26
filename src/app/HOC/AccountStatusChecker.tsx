@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import mixpanel from 'mixpanel-figma';
 import { isMixpanelEnabled } from '@/app/configs/mixpanel.config';
@@ -8,13 +8,14 @@ import {
   useUpdateAccountMutation,
 } from '@/app/redux/services';
 import { AnimatedPage, ErrorComponent, Splash } from '@/app/components';
-import { EventType } from '@/eventType';
+import { EventType, UIEventType } from '@/eventType';
 import { useWindowMessaging } from '@/app/hooks/useFigmaMessaging';
 import { AccountState, getAccount, setAccount } from '@/app/redux/features';
 import { useTypedDispatch } from '@/app/redux/store';
 
-// The sandbox sends the user data right after startup; without it the plugin
-// can't identify the user, so show the error screen instead of an endless splash
+// The sandbox pushes the user data on startup and answers GET_USER_ACCOUNT_DATA;
+// without it the plugin can't identify the user, so show the error screen
+// instead of an endless splash
 const USER_ACCOUNT_DATA_TIMEOUT = 20000;
 
 type Props = {
@@ -23,6 +24,8 @@ type Props = {
 export const AccountStatusChecker = ({ children }: Props) => {
   const [isShowError, setIsShowError] = useState(false);
   const [isUserDataReceived, setIsUserDataReceived] = useState(false);
+  // The startup push and the reply to our request can both arrive: load the account once
+  const hasHandledUserDataRef = useRef(false);
   const { figmaUserID } = useSelector(getAccount);
   const [onUpdateAccount, { isLoading }] = useUpdateAccountMutation();
 
@@ -60,6 +63,9 @@ export const AccountStatusChecker = ({ children }: Props) => {
   const handleFigmaPluginMessages = useCallback(
     (message: MessageType) => {
       if (message?.type === EventType.USER_ACCOUNT_DATA) {
+        if (hasHandledUserDataRef.current) return;
+        hasHandledUserDataRef.current = true;
+
         const userData = message?.payload?.data;
         setIsUserDataReceived(true);
 
@@ -94,7 +100,12 @@ export const AccountStatusChecker = ({ children }: Props) => {
     [onUpdateAccount, handleCreateAccount, handleAccountLoaded],
   );
 
-  useWindowMessaging(handleFigmaPluginMessages);
+  const { onSendMessage } = useWindowMessaging(handleFigmaPluginMessages);
+
+  // Ask once we're listening, in case the startup push arrived before the UI mounted.
+  useEffect(() => {
+    onSendMessage({ type: UIEventType.GET_USER_ACCOUNT_DATA, payload: null });
+  }, [onSendMessage]);
 
   useEffect(() => {
     if (isUserDataReceived) {

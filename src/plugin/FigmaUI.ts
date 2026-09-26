@@ -59,6 +59,8 @@ export class FigmaUI {
     );
 
     this.commandHandler.handleCommand();
+    // Sent before the slower awaits below, so the UI can start loading the account early.
+    this.figmaAPI.sendCurrentUserInformation();
 
     await this.globalSettings.sendToUIGlobalSettings();
 
@@ -66,7 +68,6 @@ export class FigmaUI {
       RELAUNCH_DATA_STORE_KEY,
     );
 
-    this.figmaAPI.sendCurrentUserInformation();
     // We call this function for first time and check if user selected right node
     await this.figmaAPI.handleSelectionChange();
 
@@ -90,6 +91,23 @@ export class FigmaUI {
 
   private async handleUIMessage(message: MessageType) {
     const { type, payload } = message;
+
+    // Replies to the UI's startup-state requests (see UIEventType).
+    if (type === UIEventType.GET_USER_ACCOUNT_DATA) {
+      this.figmaAPI.sendCurrentUserInformation();
+    }
+
+    if (type === UIEventType.GET_PLUGIN_SETTINGS) {
+      await this.globalSettings.sendToUIGlobalSettings();
+    }
+
+    if (type === UIEventType.GET_LAUNCH_COMMAND) {
+      this.commandHandler.handleCommand();
+    }
+
+    if (type === UIEventType.GET_SELECTION_PREVIEW) {
+      await this.figmaAPI.handleSelectionChange();
+    }
 
     if (type === UIEventType.GET_IMAGES_UINT_ARRAY_COLLECTION) {
       await this.collectNodes();
