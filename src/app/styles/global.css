@@ -128,11 +128,8 @@
       0 10px,
       10px -10px,
       -10px 0;
-    background-image: linear-gradient(
-        45deg,
-        rgba(85, 85, 85, 0.15) 25%,
-        transparent 0
-      ),
+    background-image:
+      linear-gradient(45deg, rgba(85, 85, 85, 0.15) 25%, transparent 0),
       linear-gradient(-45deg, rgba(85, 85, 85, 0.15) 25%, transparent 0),
       linear-gradient(45deg, transparent 75%, rgba(85, 85, 85, 0.15) 0),
       linear-gradient(-45deg, transparent 75%, rgba(85, 85, 85, 0.15) 0);

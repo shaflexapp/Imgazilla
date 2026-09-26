@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const Dotenv = require('dotenv-webpack');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
+const InlineChunkHtmlPlugin = require('./webpack/plugins/inline-chunk-html');
 
 const getEnvFile = (mode) =>
   mode === 'production' ? '.env' : '.env.development.local';
@@ -60,8 +60,9 @@ const createConfig = (_env, { mode }) => ({
         ],
       },
       {
+        // Always inlined as a base64 data URL, like url-loader without a limit.
         test: /\.(png|jpg|gif|webp)$/,
-        loader: 'url-loader',
+        type: 'asset/inline',
       },
       {
         test: /\.svg$/,
@@ -84,6 +85,13 @@ const createConfig = (_env, { mode }) => ({
     },
   },
 
+  experiments: {
+    // html-webpack-plugin builds index.html. Without this, webpack >= 5.109
+    // enables its own HTML support and minifies index.html a second time,
+    // including the inlined ui chunk.
+    html: false,
+  },
+
   optimization: {
     nodeEnv: mode === 'production' ? 'production' : 'development',
     minimize: mode === 'production',
@@ -96,14 +104,6 @@ const createConfig = (_env, { mode }) => ({
     filename: '[name].js',
     sourceMapFilename: '[name].js.map',
     path: path.resolve(__dirname, 'dist'),
-  },
-
-  devServer: {
-    static: path.resolve(__dirname, 'dist'),
-    compress: true,
-    port: 9000,
-    hot: true,
-    open: true,
   },
 
   plugins: [

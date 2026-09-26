@@ -1,33 +1,27 @@
-const { FlatCompat } = require('@eslint/eslintrc');
+const { defineConfig, globalIgnores } = require('eslint/config');
+const tseslint = require('typescript-eslint');
+const prettierRecommended = require('eslint-plugin-prettier/recommended');
 
-const compat = new FlatCompat({ resolvePluginsRelativeTo: __dirname });
-
-module.exports = [
-  ...compat.config({
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      project: 'tsconfig.json',
-      tsconfigRootDir: __dirname,
+module.exports = defineConfig([
+  globalIgnores([
+    'eslint.config.js',
+    'dist/**',
+    'tailwind.config.js',
+    'svgo.config.js',
+    'postcss.config.js',
+    'webpack.config.js',
+    'webpack/**',
+  ]),
+  tseslint.configs.recommended,
+  prettierRecommended,
+  {
+    languageOptions: {
       sourceType: 'module',
+      parserOptions: {
+        project: 'tsconfig.json',
+        tsconfigRootDir: __dirname,
+      },
     },
-    plugins: ['@typescript-eslint'],
-    extends: [
-      'plugin:@typescript-eslint/recommended',
-      'plugin:prettier/recommended',
-    ],
-    root: true,
-    env: {
-      node: true,
-      jest: true,
-    },
-    ignorePatterns: [
-      'eslint.config.js',
-      'dist/**',
-      'tailwind.config.js',
-      'svgo.config.js',
-      'postcss.config.js',
-      'webpack.config.js',
-    ],
     rules: {
       '@typescript-eslint/interface-name-prefix': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
@@ -46,5 +40,5 @@ module.exports = [
         },
       ],
     },
-  }),
-];
+  },
+]);

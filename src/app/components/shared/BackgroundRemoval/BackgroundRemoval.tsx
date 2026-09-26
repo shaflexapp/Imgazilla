@@ -124,7 +124,7 @@ export const BackgroundRemoval = () => {
       name: ANALYTIC_EVENTS.BACKGROUND_REMOVAL_CLICK,
     });
 
-    removeBackground({ image: encode(imageData) })
+    removeBackground({ image: encode(imageData as unknown as ArrayBuffer) })
       .unwrap()
       .then(({ jobId }: { jobId: string }) => {
         setPollingInterval(JOB_POLLING_INTERVAL);

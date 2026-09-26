@@ -3,6 +3,8 @@ declare module '*.svg' {
   export default content;
 }
 
+declare module '*.css';
+
 declare module 'crypto-browserify';
 
 declare module 'react-syntax-highlighter';

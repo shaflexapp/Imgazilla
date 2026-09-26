@@ -90,7 +90,8 @@ export const InstructionSheet = () => {
                 <li className='text-sm'>
                   2. Each archive will cost you {IMAGE_CREDITS_COST} credits.{' '}
                   <span className='inline-block font-bold text-sm ml-0.5 mt-1'>
-                    (Without limiting the number of images in each archive).{' '}
+                    (Without limiting the number of images in each
+                    archive).{' '}
                   </span>
                 </li>
               </ul>

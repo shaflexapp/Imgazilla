@@ -64,7 +64,7 @@ export const FaviconExporterSettings = () => {
   const handleOnSubmit = useCallback(
     (data: FormDataType) => {
       const result = {
-        image: encode(imageData),
+        image: encode(imageData as unknown as ArrayBuffer),
         ...data,
       };
       generateFavicon(result)
