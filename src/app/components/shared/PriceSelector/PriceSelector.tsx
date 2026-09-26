@@ -1,7 +1,6 @@
-import { Coins } from 'lucide-react';
-
 import {
   AnimatedPage,
+  CoinsIcon,
   Loading,
   Tooltip,
   TooltipContent,
@@ -46,7 +45,7 @@ export const PriceSelector = () => {
                     onClick={() => window.open(variant.link, '_blank')}
                   >
                     <div className='flex items-center align-baseline gap-1.5'>
-                      <Coins
+                      <CoinsIcon
                         size={25}
                         className='fill-amber-400 stroke-amber-600'
                       />

@@ -67,6 +67,7 @@ export * from '@/app/components/ui/DropdownMenu/DropdownMenu';
 export * from '@/app/components/ui/Avatar/Avatar';
 
 export { ImagePreviewIcon } from '@/app/components/icons/ImagePreviewIcon/ImagePreviewIcon';
+export { CoinsIcon } from '@/app/components/icons/CoinsIcon';
 export { ChromeTabPreviewImage } from '@/app/components/icons/ChromeTabPreviewImage';
 export { IPhonePreviewImage } from '@/app/components/icons/IPhonePreviewImage';
 export { ChromeSearchResultBrowserPreview } from '@/app/components/icons/ChromeSearchResultBrowserPreview';
