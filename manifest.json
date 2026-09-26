@@ -14,7 +14,7 @@
       "https://*.sentry.io",
       "https://*.mixpanel.com"
     ],
-    "devAllowedDomains": ["http://localhost:3000"]
+    "devAllowedDomains": ["http://localhost:3000", "http://localhost:3100"]
   },
   "relaunchButtons": [
     { "command": "favicon", "name": "Imgazilla - Favicon exporter" },

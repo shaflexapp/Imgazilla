@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import mixpanel from 'mixpanel-figma';
+import { isMixpanelEnabled } from '@/app/configs/mixpanel.config';
 
 interface EventProperties {
   [key: string]: any;
@@ -10,7 +11,7 @@ export const useMixpanel = (options?: {
   pageProperties?: EventProperties;
 }) => {
   useEffect(() => {
-    if (options?.pageName) {
+    if (isMixpanelEnabled && options?.pageName) {
       mixpanel.track('Page Viewed', {
         page: options.pageName,
         ...options.pageProperties,
@@ -19,6 +20,6 @@ export const useMixpanel = (options?: {
   }, [options]);
 
   return useCallback((eventName: string, eventProperties?: EventProperties) => {
-    mixpanel.track(eventName, eventProperties);
+    if (isMixpanelEnabled) mixpanel.track(eventName, eventProperties);
   }, []);
 };

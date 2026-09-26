@@ -1,6 +1,7 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import mixpanel from 'mixpanel-figma';
+import { isMixpanelEnabled } from '@/app/configs/mixpanel.config';
 import {
   CreateAccountBody,
   useCreateAccountMutation,
@@ -71,7 +72,7 @@ export const AccountStatusChecker = ({ children }: Props) => {
         // Figma users without an avatar have a null photoUrl; the API expects a string
         const photoUrl: string = userData.photoUrl ?? '';
 
-        mixpanel.identify(id);
+        if (isMixpanelEnabled) mixpanel.identify(id);
 
         onUpdateAccount({ id, photoUrl })
           .unwrap()
